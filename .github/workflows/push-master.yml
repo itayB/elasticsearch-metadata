@@ -15,7 +15,7 @@ jobs:
           npm install
           npm run build
       - name: docker login
-        uses: actions/docker/login@master
+        run: docker login --username $DOCKER_USERNAME --password $DOCKER_PASSWORD
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
