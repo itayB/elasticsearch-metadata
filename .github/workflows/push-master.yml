@@ -15,9 +15,9 @@ jobs:
           npm install
           npm run build
       - name: docker login
-          uses: actions/docker/login@master
-          env:
-            DOCKER_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-            DOCKER_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
+        uses: actions/docker/login@master
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
       - name: Build the Docker image
         run: docker build . --file Dockerfile -t elasticsearch-metadata:$(date +%s)
