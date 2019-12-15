@@ -1,8 +1,13 @@
 {
+  "proxy": "http://localhost:8080",
   "name": "compareact",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@material-ui/core": "^4.7.2",
+    "@material-ui/icons": "^4.5.1",
+    "axios": "^0.19.0",
+    "material-table": "^1.54.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-scripts": "3.0.1"
