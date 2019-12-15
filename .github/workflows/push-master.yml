@@ -6,7 +6,7 @@ on:
       - master
 
 jobs:
-  build-react:
+  deploy-docker-image:
     runs-on: [ubuntu-18.04]
     steps:
       - uses: actions/checkout@master
@@ -14,10 +14,5 @@ jobs:
         run: |
           npm install
           npm run build
-  build-docker-image:
-    runs-on: [ubuntu-18.04]
-    steps:
-      - uses: actions/checkout@master
       - name: Build the Docker image
         run: docker build . --file Dockerfile --tag elasticsearch-metadata:$(date +%s)
-    needs: build-react
