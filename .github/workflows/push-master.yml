@@ -9,6 +9,7 @@ jobs:
   build-react:
     runs-on: [ubuntu-18.04]
     steps:
+      - uses: actions/checkout@master
       - name: creates a build directory with a production build of the application
         run: |
           npm install
