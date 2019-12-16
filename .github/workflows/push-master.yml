@@ -20,6 +20,10 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
       - name: Build the Docker image
-        run: docker build . --file Dockerfile -t elasticsearch-metadata
+        run: docker build . --file Dockerfile -t $DOCKER_USERNAME/elasticsearch-metadata
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
       - name: Push the Docker image
-        run: docker push itayb/elasticsearch-metadata
+        run: docker push $DOCKER_USERNAME/elasticsearch-metadata
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
