@@ -1,4 +1,16 @@
-from aiohttp import web
+from aiohttp import web, ClientSession
+
+
+async def _get_request(url):
+    async with ClientSession() as session:
+        async with session.get(url) as response:
+            if response.status == 200:
+                res = await response.json()
+            else:
+                res = {
+                    'status': 'error'
+                }
+            return res
 
 
 async def get_indices_handler(request):
@@ -7,170 +19,11 @@ async def get_indices_handler(request):
     :return: aiohttp Response object
     """
     app = request.app
+    es_url = app['es_url']
+    res = await _get_request(es_url + '/_cat/indices?format=json')
 
     response = {
-        'data': [
-         {
-             "index": 's_8769380_1575980464585',
-             "alias": 'products_8769380_sync',
-             "section": 8769380,
-             "publisher": 'Lands End',
-             "name": 'USCD Production',
-             "count": 129130,
-             "tier": 1,
-             "url": 'https://www.landsend.com/',
-         },
-        {
-            "index": '1',
-            "alias": 'products_8769380_sync',
-            "section": 8769380,
-            "publisher": 'Lands End',
-            "name": 'USCD Production',
-            "count": 129130,
-            "tier": 1,
-            "url": 'https://www.landsend.com/',
-        },
-        {
-            "index": '2',
-            "alias": 'products_8769380_sync',
-            "section": 8769380,
-            "publisher": 'Lands End',
-            "name": 'USCD Production',
-            "count": 129130,
-            "tier": 1,
-            "url": 'https://www.landsend.com/',
-        },
-        {
-            "index": '3',
-            "alias": 'products_8769380_sync',
-            "section": 8769380,
-            "publisher": 'Lands End',
-            "name": 'USCD Production',
-            "count": 129130,
-            "tier": 1,
-            "url": 'https://www.landsend.com/',
-        },
-        {
-            "index": '4',
-            "alias": 'products_8769380_sync',
-            "section": 8769380,
-            "publisher": 'Lands End',
-            "name": 'USCD Production',
-            "count": 129130,
-            "tier": 1,
-            "url": 'https://www.landsend.com/',
-        },
-        {
-            "index": '5',
-            "alias": 'products_8769380_sync',
-            "section": 8769380,
-            "publisher": 'Lands End',
-            "name": 'USCD Production',
-            "count": 129130,
-            "tier": 1,
-            "url": 'https://www.landsend.com/',
-        },
-        {
-            "index": '6',
-            "alias": 'products_8769380_sync',
-            "section": 8769380,
-            "publisher": 'Lands End',
-            "name": 'USCD Production',
-            "count": 129130,
-            "tier": 1,
-            "url": 'https://www.landsend.com/',
-        },
-        {
-            "index": '7',
-            "alias": 'products_8769380_sync',
-            "section": 8769380,
-            "publisher": 'Lands End',
-            "name": 'USCD Production',
-            "count": 129130,
-            "tier": 1,
-            "url": 'https://www.landsend.com/',
-        },
-        {
-            "index": '8',
-            "alias": 'products_8769380_sync',
-            "section": 8769380,
-            "publisher": 'Lands End',
-            "name": 'USCD Production',
-            "count": 129130,
-            "tier": 1,
-            "url": 'https://www.landsend.com/',
-        },
-        {
-            "index": '9',
-            "alias": 'products_8769380_sync',
-            "section": 8769380,
-            "publisher": 'Lands End',
-            "name": 'USCD Production',
-            "count": 129130,
-            "tier": 1,
-            "url": 'https://www.landsend.com/',
-        },
-        {
-            "index": 's_8769380_1575980464585',
-            "alias": 'products_8769380_sync',
-            "section": 8769380,
-            "publisher": 'Lands End',
-            "name": 'USCD Production',
-            "count": 129130,
-            "tier": 1,
-            "url": 'https://www.landsend.com/',
-        },
-        {
-            "index": 's_8769380_1575980464585',
-            "alias": 'products_8769380_sync',
-            "section": 8769380,
-            "publisher": 'Lands End',
-            "name": 'USCD Production',
-            "count": 129130,
-            "tier": 1,
-            "url": 'https://www.landsend.com/',
-        },
-        {
-            "index": 's_8769380_1575980464585',
-            "alias": 'products_8769380_sync',
-            "section": 8769380,
-            "publisher": 'Lands End',
-            "name": 'USCD Production',
-            "count": 129130,
-            "tier": 1,
-            "url": 'https://www.landsend.com/',
-        },
-        {
-            "index": 's_8769380_1575980464585',
-            "alias": 'products_8769380_sync',
-            "section": 8769380,
-            "publisher": 'Lands End',
-            "name": 'USCD Production',
-            "count": 129130,
-            "tier": 1,
-            "url": 'https://www.landsend.com/',
-        },
-        {
-            "index": 's_8769380_1575980464585',
-            "alias": 'products_8769380_sync',
-            "section": 8769380,
-            "publisher": 'Lands End',
-            "name": 'USCD Production',
-            "count": 129130,
-            "tier": 1,
-            "url": 'https://www.landsend.com/',
-        },
-        {
-            "index": 's_8769380_1575980464585',
-            "alias": 'products_8769380_sync',
-            "section": 8769380,
-            "publisher": 'Lands End',
-            "name": 'USCD Production',
-            "count": 129130,
-            "tier": 1,
-            "url": 'https://www.landsend.com/',
-        }
-        ],
+        'data': res,
         'page': 1,
         'total': 1
     }

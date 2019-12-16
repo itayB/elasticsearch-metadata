@@ -1,6 +1,7 @@
 from aiohttp import web
 from aiohttp.web_app import Application
 from handlers.get_indices_handler import get_indices_handler
+from configuration import ELASTICSEARCH_HOST, ELASTICSEARCH_PORT
 
 STATIC_WEB_PATH = '../build'
 
@@ -14,7 +15,7 @@ def main():
     main function
     """
     app: Application = web.Application()
-    app['es_conn'] = 'http://localhost:9200'
+    app['es_url'] = 'http://' + ELASTICSEARCH_HOST + ':' + str(ELASTICSEARCH_PORT)
     app.add_routes([
         # web.get('/', get_status_handler),
         web.get('/api/v1/indices', get_indices_handler),
