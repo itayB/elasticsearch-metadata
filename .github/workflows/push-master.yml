@@ -22,4 +22,4 @@ jobs:
       - name: Build the Docker image
         run: docker build . --file Dockerfile -t elasticsearch-metadata
       - name: Push the Docker image
-        run: docker push elasticsearch-metadata
+        run: docker push itayb/elasticsearch-metadata
