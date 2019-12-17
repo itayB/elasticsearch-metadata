@@ -48,12 +48,12 @@ function getSorting(order, orderBy) {
 const headCells = [
     { id: 'url', numeric: false, disablePadding: true, label: '' },
     { id: 'publisher', numeric: false, disablePadding: true, label: 'Publisher' },
-    { id: 'name', numeric: false, disablePadding: true, label: 'Name' },
-    { id: 'section', numeric: true, disablePadding: false, label: 'Section' },
+    { id: 'eCommerceName', numeric: false, disablePadding: true, label: 'Name' },
+    { id: 'name', numeric: true, disablePadding: false, label: 'Section' },
     { id: 'index', numeric: false, disablePadding: false, label: 'Index' },
     { id: 'alias', numeric: false, disablePadding: false, label: 'Alias' },
     { id: 'tier', numeric: true, disablePadding: false, label: 'Tier' },
-    { id: 'count', numeric: true, disablePadding: false, label: 'Count' },
+    { id: 'docs.count', numeric: true, disablePadding: false, label: 'Count' },
 ];
 
 function EnhancedTableHead(props) {
@@ -309,15 +309,15 @@ export default function MetaTable() {
                                             <TableCell><a href={row.url} target='_blank'><img src={`${row.url}/favicon.ico`}
                                                                                                    style={{width: 20}}/></a></TableCell>
                                             <TableCell component="th" id={labelId} scope="row" padding="none">
-                                                {row.index}
+                                                {row.eCommerceName}
                                             </TableCell>
-                                            <TableCell>{row.publisher}</TableCell>
+                                            <TableCell>{row.name}</TableCell>
                                             {/*<TableCell>{row.name}</TableCell>*/}
-                                            <TableCell>{row.section}</TableCell>
+                                            <TableCell>{row.eCommerceId}</TableCell>
                                             <TableCell>{row.index}</TableCell>
                                             <TableCell>{row.alias}</TableCell>
                                             <TableCell>{row.tier}</TableCell>
-                                            <TableCell>{row.count}</TableCell>
+                                            <TableCell>{row['docs.count']}</TableCell>
                                         </TableRow>
                                     );
                                 })}

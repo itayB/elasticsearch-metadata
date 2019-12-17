@@ -1,3 +1,5 @@
+from typing import List, Dict
+
 from aiohttp import web, ClientSession
 
 
@@ -20,7 +22,17 @@ async def get_indices_handler(request):
     """
     app = request.app
     es_url = app['es_url']
-    res = await _get_request(es_url + '/_cat/indices?format=json')
+    indices: List[Dict] = await _get_request(es_url + '/_cat/indices?format=json')
+    mapping: Dict = await _get_request(es_url + '/_mapping')
+    aliases: Dict = await _get_request(es_url + '/_aliases')
+
+    res = []
+    for index_info in indices:
+        index = index_info.get('index')
+        mappings = mapping.get(index, {}).get('mappings', {})
+        metadata = mappings.get('_meta', mappings.get('doc', {}).get('_meta'))  # older Elasticsearch versions support
+        alias = [*aliases.get(index, {}).get('aliases', {})]
+        res.append({**index_info, **metadata, **{'aliases': alias}})
 
     response = {
         'data': res,
