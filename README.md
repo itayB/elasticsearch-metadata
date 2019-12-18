@@ -1,3 +1,8 @@
+![Build][docker-build]
+
+<!-- MARKDOWN LINKS & IMAGES -->
+[docker-build]: https://github.com/itayb/elasticsearch-metadata/workflows/Push%20to%20Master%20CI/badge.svg
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
