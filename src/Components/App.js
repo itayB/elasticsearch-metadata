@@ -1,6 +1,5 @@
 import React, { Component, Fragment } from 'react';
-import { Header, Footer } from './Layouts'
-import Configuration from './Configurations';
+import { Header } from './Layouts'
 import MetaTable from "./Layouts/MetaTable";
 
 

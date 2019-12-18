@@ -182,7 +182,6 @@ export default function MetaTable() {
     const [orderBy, setOrderBy] = React.useState('calories');
     const [selected, setSelected] = React.useState([]);
     const [page, setPage] = React.useState(0);
-    const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [lines, setLines] = React.useState([]);
     const [headers, setHeaders] = React.useState([]);
@@ -269,7 +268,7 @@ export default function MetaTable() {
                     <Table
                         className={classes.table}
                         aria-labelledby="tableTitle"
-                        size={dense ? 'small' : 'medium'}
+                        size='medium'
                         aria-label="enhanced table"
                     >
                         <EnhancedTableHead
@@ -311,16 +310,16 @@ export default function MetaTable() {
                                             {/*    {row.eCommerceName}*/}
                                             {/*</TableCell>*/}
                                             {
-                                                headers.map(header => {
+                                                headers.map((header, index) => {
                                                     const column = header.id;
-                                                   return <TableCell>{row[column]}</TableCell>
+                                                   return <TableCell key={index}>{row[column]}</TableCell>
                                                 })
                                             }
                                         </TableRow>
                                     );
                                 })}
                             {emptyRows > 0 && (
-                                <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
+                                <TableRow style={{ height: 53 * emptyRows }}>
                                     <TableCell colSpan={6} />
                                 </TableRow>
                             )}
