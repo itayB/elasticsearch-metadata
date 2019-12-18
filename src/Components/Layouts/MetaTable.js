@@ -16,10 +16,7 @@ import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
 import DeleteIcon from '@material-ui/icons/Delete';
-import FilterListIcon from '@material-ui/icons/FilterList';
 
 function desc(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -45,19 +42,8 @@ function getSorting(order, orderBy) {
     return order === 'desc' ? (a, b) => desc(a, b, orderBy) : (a, b) => -desc(a, b, orderBy);
 }
 
-const headCells = [
-    { id: 'url', numeric: false, disablePadding: true, label: '' },
-    { id: 'publisher', numeric: false, disablePadding: true, label: 'Publisher' },
-    { id: 'eCommerceName', numeric: false, disablePadding: true, label: 'Name' },
-    { id: 'name', numeric: true, disablePadding: false, label: 'Section' },
-    { id: 'index', numeric: false, disablePadding: false, label: 'Index' },
-    { id: 'alias', numeric: false, disablePadding: false, label: 'Alias' },
-    { id: 'tier', numeric: true, disablePadding: false, label: 'Tier' },
-    { id: 'docs.count', numeric: true, disablePadding: false, label: 'Count' },
-];
-
 function EnhancedTableHead(props) {
-    const { classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
+    const { headCells, classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
     const createSortHandler = property => event => {
         onRequestSort(event, property);
     };
@@ -199,8 +185,7 @@ export default function MetaTable() {
     const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [lines, setLines] = React.useState([]);
-
-
+    const [headers, setHeaders] = React.useState([]);
 
     useEffect(() => {
         axios
@@ -208,9 +193,22 @@ export default function MetaTable() {
                 window.location.origin + '/api/v1/indices'
             )
             .then(({ data }) => {
-                console.log(data);
                 setLines(data.data);
                 // setNextTodoId(data.length);
+                const keysArray = data.data.map(indexInfo => Object.keys(indexInfo));
+                const keys = keysArray.reduce((combined, list) => {
+                    return new Set([...combined, ...list]);
+                }, new Set());
+
+                const columns = [...keys].map(key => {
+                    return {
+                        id: key,
+                        numeric: false,  // TODO: sample some values above
+                        disablePadding: false,
+                        label: key
+                    }
+                });
+                setHeaders(columns);
             });
     }, []);
 
@@ -275,6 +273,7 @@ export default function MetaTable() {
                         aria-label="enhanced table"
                     >
                         <EnhancedTableHead
+                            headCells={headers}
                             classes={classes}
                             numSelected={selected.length}
                             order={order}
@@ -306,18 +305,17 @@ export default function MetaTable() {
                                                     inputProps={{ 'aria-labelledby': labelId }}
                                                 />
                                             </TableCell>
-                                            <TableCell><a href={row.url} target='_blank'><img src={`${row.url}/favicon.ico`}
-                                                                                                   style={{width: 20}}/></a></TableCell>
-                                            <TableCell component="th" id={labelId} scope="row" padding="none">
-                                                {row.eCommerceName}
-                                            </TableCell>
-                                            <TableCell>{row.name}</TableCell>
-                                            {/*<TableCell>{row.name}</TableCell>*/}
-                                            <TableCell>{row.eCommerceId}</TableCell>
-                                            <TableCell>{row.index}</TableCell>
-                                            <TableCell>{row.alias}</TableCell>
-                                            <TableCell>{row.tier}</TableCell>
-                                            <TableCell>{row['docs.count']}</TableCell>
+                                            {/*<TableCell><a href={row.url} target='_blank'><img src={`${row.url}/favicon.ico`}*/}
+                                            {/*                                                       style={{width: 20}}/></a></TableCell>*/}
+                                            {/*<TableCell component="th" id={labelId} scope="row" padding="none">*/}
+                                            {/*    {row.eCommerceName}*/}
+                                            {/*</TableCell>*/}
+                                            {
+                                                headers.map(header => {
+                                                    const column = header.id;
+                                                   return <TableCell>{row[column]}</TableCell>
+                                                })
+                                            }
                                         </TableRow>
                                     );
                                 })}
