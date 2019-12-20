@@ -17,6 +17,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
+import ColumnsDialog from '../Indices/Dialogs/ColumnsDialog'
 
 function desc(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -117,7 +118,7 @@ const useToolbarStyles = makeStyles(theme => ({
 
 const EnhancedTableToolbar = props => {
     const classes = useToolbarStyles();
-    const { numSelected } = props;
+    const { numSelected, columns } = props;
 
     return (
         <Toolbar
@@ -140,13 +141,16 @@ const EnhancedTableToolbar = props => {
                         <DeleteIcon />
                     </IconButton>
                 </Tooltip>
-            ) : ""}
+            ) : (
+                <ColumnsDialog columns={columns} />
+            )}
         </Toolbar>
     );
 };
 
 EnhancedTableToolbar.propTypes = {
     numSelected: PropTypes.number.isRequired,
+    columns: PropTypes.array.isRequired,
 };
 
 const useStyles = makeStyles(theme => ({
@@ -258,12 +262,18 @@ export default function MetaTable() {
 
     const isSelected = index => selected.indexOf(index) !== -1;
 
+    const getColumnsIds = headers => {
+        return headers.map((header, index) => {
+            return header.id;
+        })
+    };
+
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, lines.length - page * rowsPerPage);
 
     return (
         <div className={classes.root}>
             <Paper className={classes.paper}>
-                <EnhancedTableToolbar numSelected={selected.length} />
+                <EnhancedTableToolbar numSelected={selected.length} columns={getColumnsIds(headers)} />
                 <div className={classes.tableWrapper}>
                     <Table
                         className={classes.table}
