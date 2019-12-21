@@ -19,6 +19,7 @@ export default function ColumnsDialog(props) {
     const [open, setOpen] = React.useState(false);
     const radioGroupRef = React.useRef(null);
     const options = columns;
+    const checkedColumns = Object.assign({}, ...columns.map(k => {return {[k]: true}}));
 
     React.useEffect(() => {
         if (!open) {
@@ -36,7 +37,7 @@ export default function ColumnsDialog(props) {
         setOpen(false);
     };
 
-    const handleOk = () => {
+    const handleSave = () => {
         // onClose(value);
         setOpen(false);
     };
@@ -79,7 +80,12 @@ export default function ColumnsDialog(props) {
                         onChange={handleChange}
                     >
                         {options.map(option => (
-                            <FormControlLabel value={option} key={option} control={<Checkbox />} label={option} />
+                            <FormControlLabel
+                                value={option}
+                                key={option}
+                                control={<Checkbox checked={checkedColumns[option]} />}
+                                label={option}
+                            />
                         ))}
                     </RadioGroup>
                 </DialogContent>
@@ -87,8 +93,8 @@ export default function ColumnsDialog(props) {
                     <Button autoFocus onClick={handleCancel} color="primary">
                         Cancel
                     </Button>
-                    <Button onClick={handleOk} color="primary">
-                        Ok
+                    <Button onClick={handleSave} color="primary">
+                        Save
                     </Button>
                 </DialogActions>
             </Dialog>
