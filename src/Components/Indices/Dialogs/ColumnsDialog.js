@@ -29,8 +29,13 @@ export default function ColumnsDialog(props) {
         }
     };
 
+    const handleOpen = () => {
+        setOpen(true);
+    };
+
     const handleCancel = () => {
         setOpen(false);
+        setOptions(columns);
     };
 
     const handleSave = () => {
@@ -51,10 +56,6 @@ export default function ColumnsDialog(props) {
     // const handleChange = event => {
     //     setValue(event.target.value);
     // };
-
-    const handleOpen = () => {
-        setOpen(true);
-    };
 
     return (
         <Fragment>
