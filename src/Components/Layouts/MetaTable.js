@@ -70,6 +70,7 @@ function EnhancedTableHead(props) {
                     />
                 </TableCell>
                 {headCells.map(headCell => (
+                    headCell.hidden ? '' :
                     <TableCell
                         key={headCell.id}
                         // align={headCell.numeric ? 'right' : 'left'}
@@ -127,7 +128,17 @@ const useToolbarStyles = makeStyles(theme => ({
 
 const EnhancedTableToolbar = props => {
     const classes = useToolbarStyles();
-    const { numSelected, columns } = props;
+    const { numSelected, columns, onColumnsChange } = props;
+    const [options, setOptions] = React.useState([]);
+
+    React.useEffect(() => {
+        setOptions(props.columns);
+    }, [props.columns]);
+
+    const handleColumnsChange = newOptions => {
+        setOptions(newOptions);  // redundant? only delegate..
+        onColumnsChange(newOptions);
+    };
 
     return (
         <Toolbar
@@ -151,7 +162,10 @@ const EnhancedTableToolbar = props => {
                     </IconButton>
                 </Tooltip>
             ) : (
-                <ColumnsDialog columns={columns} />
+                <ColumnsDialog
+                    columns={columns}
+                    onColumnsChange={handleColumnsChange}
+                />
             )}
         </Toolbar>
     );
@@ -280,10 +294,18 @@ export default function MetaTable() {
 
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, lines.length - page * rowsPerPage);
 
+    const handleColumnsChange = newColumns => {
+        setHeaders(newColumns);
+    };
+
     return (
         <div className={classes.root}>
             <Paper className={classes.paper}>
-                <EnhancedTableToolbar numSelected={selected.length} columns={headers} />
+                <EnhancedTableToolbar
+                    numSelected={selected.length}
+                    columns={headers}
+                    onColumnsChange={handleColumnsChange}
+                />
                 <div className={classes.tableWrapper}>
                     <Table
                         className={classes.table}
@@ -332,7 +354,8 @@ export default function MetaTable() {
                                             {
                                                 headers.map((header, index) => {
                                                     const column = header.id;
-                                                   return <TableCell key={index}>{row[column]}</TableCell>
+                                                   return header.hidden ? '' :
+                                                       <TableCell key={index}>{row[column]}</TableCell>
                                                 })
                                             }
                                         </TableRow>

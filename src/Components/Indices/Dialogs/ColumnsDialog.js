@@ -36,7 +36,7 @@ export default function ColumnsDialog(props) {
     const handleSave = () => {
         // onClose(value);
         setOpen(false);
-        onColumnsChange();
+        onColumnsChange(options);
     };
 
     const toggleHiddenFlag = option => { return {...option, hidden: !option.hidden}};
