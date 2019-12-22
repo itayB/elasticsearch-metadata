@@ -44,7 +44,16 @@ function getSorting(order, orderBy) {
 }
 
 function EnhancedTableHead(props) {
-    const { headCells, classes, onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } = props;
+    const {
+        headCells,
+        classes,
+        onSelectAllClick,
+        order,
+        orderBy,
+        numSelected,
+        rowCount,
+        onRequestSort
+    } = props;
     const createSortHandler = property => event => {
         onRequestSort(event, property);
     };
@@ -208,7 +217,8 @@ export default function MetaTable() {
                         id: key,
                         numeric: false,  // TODO: sample some values above
                         disablePadding: false,
-                        label: key
+                        label: key,
+                        hidden: false
                     }
                 });
                 setHeaders(columns);
@@ -273,7 +283,7 @@ export default function MetaTable() {
     return (
         <div className={classes.root}>
             <Paper className={classes.paper}>
-                <EnhancedTableToolbar numSelected={selected.length} columns={getColumnsIds(headers)} />
+                <EnhancedTableToolbar numSelected={selected.length} columns={headers} />
                 <div className={classes.tableWrapper}>
                     <Table
                         className={classes.table}

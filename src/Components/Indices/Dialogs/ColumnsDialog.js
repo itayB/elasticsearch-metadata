@@ -1,4 +1,3 @@
-
 import React, {Fragment} from 'react';
 import PropTypes from 'prop-types';
 import Button from '@material-ui/core/Button';
@@ -6,7 +5,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Dialog from '@material-ui/core/Dialog';
-import RadioGroup from '@material-ui/core/RadioGroup';
+import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
@@ -15,17 +14,14 @@ import {Checkbox} from "@material-ui/core";
 
 
 export default function ColumnsDialog(props) {
-    const { columns, ...other } = props;
+    const { columns, onColumnsChange, ...other } = props;
+    const [options, setOptions] = React.useState([]);
     const [open, setOpen] = React.useState(false);
     const radioGroupRef = React.useRef(null);
-    const options = columns;
-    const checkedColumns = Object.assign({}, ...columns.map(k => {return {[k]: true}}));
 
     React.useEffect(() => {
-        if (!open) {
-            // setValue(valueProp);
-        }
-    }, [open]);
+        setOptions(props.columns);
+    }, [props.columns]);
 
     const handleEntering = () => {
         if (radioGroupRef.current != null) {
@@ -40,11 +36,21 @@ export default function ColumnsDialog(props) {
     const handleSave = () => {
         // onClose(value);
         setOpen(false);
+        onColumnsChange();
     };
 
+    const toggleHiddenFlag = option => { return {...option, hidden: !option.hidden}};
+
     const handleChange = event => {
-        // setValue(event.target.value);
+        const column = event.target.value;
+        setOptions(options.map(option => {
+            return option.id !== column ? option : toggleHiddenFlag(option)
+        }));
     };
+
+    // const handleChange = event => {
+    //     setValue(event.target.value);
+    // };
 
     const handleOpen = () => {
         setOpen(true);
@@ -72,22 +78,23 @@ export default function ColumnsDialog(props) {
             >
                 <DialogTitle id="confirmation-dialog-title">Filter Columns</DialogTitle>
                 <DialogContent dividers>
-                    <RadioGroup
-                        ref={radioGroupRef}
-                        aria-label="ringtone"
-                        name="ringtone"
-                        // value={value}
+                    <FormGroup
                         onChange={handleChange}
                     >
                         {options.map(option => (
                             <FormControlLabel
-                                value={option}
-                                key={option}
-                                control={<Checkbox checked={checkedColumns[option]} />}
-                                label={option}
+                                value={option.id}
+                                key={option.id}
+                                control={
+                                    <Checkbox
+                                        checked={!option['hidden']}
+                                        onChange={handleChange}
+                                        color='primary'
+                                    />}
+                                label={option.label}
                             />
                         ))}
-                    </RadioGroup>
+                    </FormGroup>
                 </DialogContent>
                 <DialogActions>
                     <Button autoFocus onClick={handleCancel} color="primary">
