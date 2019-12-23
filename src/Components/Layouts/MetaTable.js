@@ -132,8 +132,8 @@ const EnhancedTableToolbar = props => {
     const [options, setOptions] = React.useState([]);
 
     React.useEffect(() => {
-        setOptions(props.columns);
-    }, [props.columns]);
+        setOptions(columns);
+    }, [columns]);
 
     const handleColumnsChange = newOptions => {
         setOptions(newOptions);  // redundant? only delegate..
@@ -163,7 +163,7 @@ const EnhancedTableToolbar = props => {
                 </Tooltip>
             ) : (
                 <ColumnsDialog
-                    columns={columns}
+                    columns={options}
                     onColumnsChange={handleColumnsChange}
                 />
             )}
