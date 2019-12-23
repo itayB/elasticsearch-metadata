@@ -5,12 +5,17 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Dialog from '@material-ui/core/Dialog';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import IconButton from "@material-ui/core/IconButton";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
 import Tooltip from "@material-ui/core/Tooltip";
 import FilterListIcon from '@material-ui/icons/FilterList';
+import DragHandleIcon from "@material-ui/icons/DragHandle";
 import {Checkbox} from "@material-ui/core";
+import List from '@material-ui/core/List';
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import {SortableHandle, SortableElement, SortableContainer, arrayMove} from "react-sortable-hoc";
 
 
 export default function ColumnsDialog(props) {
@@ -57,6 +62,46 @@ export default function ColumnsDialog(props) {
     //     setValue(event.target.value);
     // };
 
+    const DragHandle = SortableHandle(() => (
+        <ListItemIcon>
+            <DragHandleIcon />
+        </ListItemIcon>
+    ));
+
+    const SortableItem = SortableElement(({ option }) => (
+        <ListItem
+            key={option.id}
+            label={option.label}
+        >
+            <ListItemIcon>
+                <Checkbox
+                    value={option.id}
+                    checked={!option['hidden']}
+                    onChange={handleChange}
+                    color='primary'
+                />
+            </ListItemIcon>
+            <ListItemText id={option.id} primary={option.label} />
+            <ListItemSecondaryAction>
+                <DragHandle />
+            </ListItemSecondaryAction>
+        </ListItem>
+    ));
+
+    const SortableListContainer = SortableContainer(({ options }) => (
+        <List
+            onChange={handleChange}
+        >
+            {options.map((option, index) => (
+                <SortableItem key={option.id} index={index} option={option} />
+            ))}
+        </List>
+    ));
+
+    const onSortEnd = ({ oldIndex, newIndex }) => {
+        setOptions(items => arrayMove(items, oldIndex, newIndex));
+    };
+
     return (
         <Fragment>
             <Tooltip title="Filter columns">
@@ -79,23 +124,12 @@ export default function ColumnsDialog(props) {
             >
                 <DialogTitle id="confirmation-dialog-title">Filter Columns</DialogTitle>
                 <DialogContent dividers>
-                    <FormGroup
-                        onChange={handleChange}
-                    >
-                        {options.map(option => (
-                            <FormControlLabel
-                                value={option.id}
-                                key={option.id}
-                                control={
-                                    <Checkbox
-                                        checked={!option['hidden']}
-                                        onChange={handleChange}
-                                        color='primary'
-                                    />}
-                                label={option.label}
-                            />
-                        ))}
-                    </FormGroup>
+               <SortableListContainer
+                   options={options}
+                   onSortEnd={onSortEnd}
+                   useDragHandle={true}
+                   lockAxis="y"
+               />
                 </DialogContent>
                 <DialogActions>
                     <Button autoFocus onClick={handleCancel} color="primary">
