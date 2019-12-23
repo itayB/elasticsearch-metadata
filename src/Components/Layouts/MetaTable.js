@@ -286,12 +286,6 @@ export default function MetaTable() {
 
     const isSelected = index => selected.indexOf(index) !== -1;
 
-    const getColumnsIds = headers => {
-        return headers.map((header, index) => {
-            return header.id;
-        })
-    };
-
     const emptyRows = rowsPerPage - Math.min(rowsPerPage, lines.length - page * rowsPerPage);
 
     const handleColumnsChange = newColumns => {
