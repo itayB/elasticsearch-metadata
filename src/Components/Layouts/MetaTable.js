@@ -70,7 +70,7 @@ function EnhancedTableHead(props) {
                     />
                 </TableCell>
                 {headCells.map(headCell => (
-                    headCell.hidden ? '' :
+                    headCell.hidden ? null :
                     <TableCell
                         key={headCell.id}
                         // align={headCell.numeric ? 'right' : 'left'}
@@ -348,7 +348,7 @@ export default function MetaTable() {
                                             {
                                                 headers.map((header, index) => {
                                                     const column = header.id;
-                                                   return header.hidden ? '' :
+                                                   return header.hidden ? null :
                                                        <TableCell key={index}>{row[column]}</TableCell>
                                                 })
                                             }
