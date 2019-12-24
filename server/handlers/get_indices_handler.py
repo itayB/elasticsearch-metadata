@@ -30,7 +30,7 @@ async def get_indices_handler(request):
     for index_info in indices:
         index = index_info.get('index')
         mappings = mapping.get(index, {}).get('mappings', {})
-        metadata = mappings.get('_meta', mappings.get('doc', {}).get('_meta'))  # older Elasticsearch versions support
+        metadata = mappings.get('_meta', mappings.get('doc', {}).get('_meta', {}))  # older Elasticsearch versions
         alias = [*aliases.get(index, {}).get('aliases', {})]
         res.append({**index_info, **metadata, **{'aliases': alias}})
 
