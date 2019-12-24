@@ -290,6 +290,12 @@ export default function MetaTable() {
 
     const handleColumnsChange = newColumns => {
         setHeaders(newColumns);
+        axios
+            .post(window.location.origin + '/api/v1/columns', { columns: newColumns }
+            )
+            .then(({ data }) => {
+                console.debug(data);
+            });
     };
 
     return (
