@@ -1,7 +1,9 @@
 ![Build][docker-build]
+![Docker Pulls][docker-pulls]
 
 <!-- MARKDOWN LINKS & IMAGES -->
 [docker-build]: https://github.com/itayb/elasticsearch-metadata/workflows/Push%20to%20Master%20CI/badge.svg
+[docker-pulls]: https://img.shields.io/docker/pulls/itayb/elasticsearch-metadata.svg
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
