@@ -18,6 +18,8 @@ import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ColumnsDialog from '../Indices/Dialogs/ColumnsDialog'
+import Snackbar from "@material-ui/core/Snackbar";
+import AlertSnackbar from './AlertSnackbar'
 
 function desc(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -213,6 +215,7 @@ export default function MetaTable() {
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [lines, setLines] = React.useState([]);
     const [headers, setHeaders] = React.useState([]);
+    const [alert, setAlert] = React.useState({ hidden: true });
 
     useEffect(() => {
         axios
@@ -237,7 +240,14 @@ export default function MetaTable() {
                     }
                 });
                 setHeaders(columns);
+            }).catch(function (error) {
+            // handle error
+            setAlert({
+               hidden: false,
+               message: error.response.data.message
             });
+            console.log(error);
+        })
     }, []);
 
 
@@ -297,6 +307,13 @@ export default function MetaTable() {
             .then(({ data }) => {
                 console.debug(data);
             });
+    };
+
+    const handleAlertClose = () => {
+        setAlert({
+           ...alert,
+           hidden: true
+        });
     };
 
     return (
@@ -380,6 +397,21 @@ export default function MetaTable() {
                     onChangeRowsPerPage={handleChangeRowsPerPage}
                 />
             </Paper>
+            <Snackbar
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                }}
+                open={!alert.hidden}
+                autoHideDuration={6000}
+                // onClose={handleClose}
+            >
+                <AlertSnackbar
+                    onClose={handleAlertClose}
+                    variant="error"
+                    message={alert.message}
+                />
+            </Snackbar>
         </div>
     );
 }
