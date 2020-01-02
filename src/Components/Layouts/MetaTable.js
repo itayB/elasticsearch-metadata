@@ -204,6 +204,12 @@ const useStyles = makeStyles(theme => ({
         top: 20,
         width: 1,
     },
+    noIndex: {
+        ...theme.typography.button,
+        backgroundColor: theme.palette.background.paper,
+        padding: theme.spacing(1),
+        textAlign: 'center',
+    },
 }));
 
 export default function MetaTable() {
@@ -317,101 +323,107 @@ export default function MetaTable() {
     };
 
     return (
-        <div className={classes.root}>
-            <Paper className={classes.paper}>
-                <EnhancedTableToolbar
-                    numSelected={selected.length}
-                    columns={headers}
-                    onColumnsChange={handleColumnsChange}
-                />
-                <div className={classes.tableWrapper}>
-                    <Table
-                        className={classes.table}
-                        aria-labelledby="tableTitle"
-                        size='medium'
-                        aria-label="enhanced table"
-                    >
-                        <EnhancedTableHead
-                            headCells={headers}
-                            classes={classes}
+        lines.length === 0 ?
+            (
+                <div className={classes.noIndex}>{"No Indices Found."}</div>
+            ) :
+            (
+                <div className={classes.root}>
+                    <Paper className={classes.paper}>
+                        <EnhancedTableToolbar
                             numSelected={selected.length}
-                            order={order}
-                            orderBy={orderBy}
-                            onSelectAllClick={handleSelectAllClick}
-                            onRequestSort={handleRequestSort}
-                            rowCount={lines.length}
+                            columns={headers}
+                            onColumnsChange={handleColumnsChange}
                         />
-                        <TableBody>
-                            {stableSort(lines, getSorting(order, orderBy))
-                                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                .map((row, index) => {
-                                    const isItemSelected = isSelected(row.index);
-                                    const labelId = `enhanced-table-checkbox-${index}`;
+                        <div className={classes.tableWrapper}>
+                            <Table
+                                className={classes.table}
+                                aria-labelledby="tableTitle"
+                                size='medium'
+                                aria-label="enhanced table"
+                            >
+                                <EnhancedTableHead
+                                    headCells={headers}
+                                    classes={classes}
+                                    numSelected={selected.length}
+                                    order={order}
+                                    orderBy={orderBy}
+                                    onSelectAllClick={handleSelectAllClick}
+                                    onRequestSort={handleRequestSort}
+                                    rowCount={lines.length}
+                                />
+                                <TableBody>
+                                    {stableSort(lines, getSorting(order, orderBy))
+                                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                        .map((row, index) => {
+                                            const isItemSelected = isSelected(row.index);
+                                            const labelId = `enhanced-table-checkbox-${index}`;
 
-                                    return (
-                                        <TableRow
-                                            hover
-                                            onClick={event => handleClick(event, row.index)}
-                                            role="checkbox"
-                                            aria-checked={isItemSelected}
-                                            tabIndex={-1}
-                                            key={row.index}
-                                            selected={isItemSelected}
-                                        >
-                                            <TableCell padding="checkbox">
-                                                <Checkbox
-                                                    checked={isItemSelected}
-                                                    inputProps={{ 'aria-labelledby': labelId }}
-                                                />
-                                            </TableCell>
-                                            {/*<TableCell><a href={row.url} target='_blank'><img src={`${row.url}/favicon.ico`}*/}
-                                            {/*                                                       style={{width: 20}}/></a></TableCell>*/}
-                                            {/*<TableCell component="th" id={labelId} scope="row" padding="none">*/}
-                                            {/*    {row.eCommerceName}*/}
-                                            {/*</TableCell>*/}
-                                            {
-                                                headers.map((header, index) => {
-                                                    const column = header.id;
-                                                   return header.hidden ? null :
-                                                       <TableCell key={index}>{row[column]}</TableCell>
-                                                })
-                                            }
+                                            return (
+                                                <TableRow
+                                                    hover
+                                                    onClick={event => handleClick(event, row.index)}
+                                                    role="checkbox"
+                                                    aria-checked={isItemSelected}
+                                                    tabIndex={-1}
+                                                    key={row.index}
+                                                    selected={isItemSelected}
+                                                >
+                                                    <TableCell padding="checkbox">
+                                                        <Checkbox
+                                                            checked={isItemSelected}
+                                                            inputProps={{ 'aria-labelledby': labelId }}
+                                                        />
+                                                    </TableCell>
+                                                    {/*<TableCell><a href={row.url} target='_blank'><img src={`${row.url}/favicon.ico`}*/}
+                                                    {/*                                                       style={{width: 20}}/></a></TableCell>*/}
+                                                    {/*<TableCell component="th" id={labelId} scope="row" padding="none">*/}
+                                                    {/*    {row.eCommerceName}*/}
+                                                    {/*</TableCell>*/}
+                                                    {
+                                                        headers.map((header, index) => {
+                                                            const column = header.id;
+                                                           return header.hidden ? null :
+                                                               <TableCell key={index}>{row[column]}</TableCell>
+                                                        })
+                                                    }
+                                                </TableRow>
+                                            );
+                                        })}
+                                    {emptyRows > 0 && (
+                                        <TableRow style={{ height: 53 * emptyRows }}>
+                                            <TableCell colSpan={6} />
                                         </TableRow>
-                                    );
-                                })}
-                            {emptyRows > 0 && (
-                                <TableRow style={{ height: 53 * emptyRows }}>
-                                    <TableCell colSpan={6} />
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </div>
+                        <TablePagination
+                            rowsPerPageOptions={[5, 10, 25]}
+                            component="div"
+                            count={lines.length}
+                            rowsPerPage={rowsPerPage}
+                            page={page}
+                            onChangePage={handleChangePage}
+                            onChangeRowsPerPage={handleChangeRowsPerPage}
+                        />
+                    </Paper>
+                    <Snackbar
+                        anchorOrigin={{
+                            vertical: 'bottom',
+                            horizontal: 'left',
+                        }}
+                        open={!alert.hidden}
+                        autoHideDuration={6000}
+                        // onClose={handleClose}
+                    >
+                        <AlertSnackbar
+                            onClose={handleAlertClose}
+                            variant="error"
+                            message={alert.message}
+                        />
+                    </Snackbar>
                 </div>
-                <TablePagination
-                    rowsPerPageOptions={[5, 10, 25]}
-                    component="div"
-                    count={lines.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onChangePage={handleChangePage}
-                    onChangeRowsPerPage={handleChangeRowsPerPage}
-                />
-            </Paper>
-            <Snackbar
-                anchorOrigin={{
-                    vertical: 'bottom',
-                    horizontal: 'left',
-                }}
-                open={!alert.hidden}
-                autoHideDuration={6000}
-                // onClose={handleClose}
-            >
-                <AlertSnackbar
-                    onClose={handleAlertClose}
-                    variant="error"
-                    message={alert.message}
-                />
-            </Snackbar>
-        </div>
+            )
     );
 }
