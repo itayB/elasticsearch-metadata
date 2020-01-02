@@ -392,7 +392,7 @@ export default function MetaTable() {
                                         })}
                                     {emptyRows > 0 && (
                                         <TableRow style={{ height: 53 * emptyRows }}>
-                                            <TableCell colSpan={6} />
+                                            <TableCell colSpan={headers.length+1} />
                                         </TableRow>
                                     )}
                                 </TableBody>
