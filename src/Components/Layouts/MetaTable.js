@@ -255,7 +255,7 @@ export default function MetaTable(props) {
         }).finally(() => {
                 setShowSpinner(false);
         })
-    }, []);
+    }, [onError]);
 
 
     const handleRequestSort = (event, property) => {
