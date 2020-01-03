@@ -18,8 +18,7 @@ import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
 import ColumnsDialog from '../Indices/Dialogs/ColumnsDialog'
-import Snackbar from "@material-ui/core/Snackbar";
-import AlertSnackbar from './AlertSnackbar'
+import CircularProgress from '@material-ui/core/CircularProgress';
 
 function desc(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -212,7 +211,8 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
-export default function MetaTable() {
+export default function MetaTable(props) {
+    const { onError } = props;
     const classes = useStyles();
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState('calories');
@@ -221,7 +221,7 @@ export default function MetaTable() {
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [lines, setLines] = React.useState([]);
     const [headers, setHeaders] = React.useState([]);
-    const [alert, setAlert] = React.useState({ hidden: true });
+    const [showSpinner, setShowSpinner] = React.useState(true);
 
     useEffect(() => {
         axios
@@ -247,12 +247,13 @@ export default function MetaTable() {
                 });
                 setHeaders(columns);
             }).catch(function (error) {
-            // handle error
-            setAlert({
-               hidden: false,
-               message: error.response.data.message
-            });
-            console.log(error);
+                // handle error
+                onError({
+                   hidden: false,
+                   message: error.response.data.message
+                });
+        }).finally(() => {
+                setShowSpinner(false);
         })
     }, []);
 
@@ -315,115 +316,101 @@ export default function MetaTable() {
             });
     };
 
-    const handleAlertClose = () => {
-        setAlert({
-           ...alert,
-           hidden: true
-        });
-    };
+    function renderSpinner() {
+        return <div style={{textAlign: 'center', marginTop: '30px'}}>
+            <CircularProgress/>
+        </div>;
+    }
+
+    function renderNoIndices() {
+        return <div className={classes.noIndex}>{"No Indices Found."}</div>;
+    }
+
+    function renderTable() {
+        return <Paper className={classes.paper}>
+            <EnhancedTableToolbar
+                numSelected={selected.length}
+                columns={headers}
+                onColumnsChange={handleColumnsChange}
+            />
+            <div className={classes.tableWrapper}>
+                <Table
+                    className={classes.table}
+                    aria-labelledby="tableTitle"
+                    size='medium'
+                    aria-label="enhanced table"
+                >
+                    <EnhancedTableHead
+                        headCells={headers}
+                        classes={classes}
+                        numSelected={selected.length}
+                        order={order}
+                        orderBy={orderBy}
+                        onSelectAllClick={handleSelectAllClick}
+                        onRequestSort={handleRequestSort}
+                        rowCount={lines.length}
+                    />
+                    <TableBody>
+                        {stableSort(lines, getSorting(order, orderBy))
+                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            .map((row, index) => {
+                                const isItemSelected = isSelected(row.index);
+                                const labelId = `enhanced-table-checkbox-${index}`;
+
+                                return (
+                                    <TableRow
+                                        hover
+                                        onClick={event => handleClick(event, row.index)}
+                                        role="checkbox"
+                                        aria-checked={isItemSelected}
+                                        tabIndex={-1}
+                                        key={row.index}
+                                        selected={isItemSelected}
+                                    >
+                                        <TableCell padding="checkbox">
+                                            <Checkbox
+                                                checked={isItemSelected}
+                                                inputProps={{'aria-labelledby': labelId}}
+                                            />
+                                        </TableCell>
+                                        {/*<TableCell><a href={row.url} target='_blank'><img src={`${row.url}/favicon.ico`}*/}
+                                        {/*                                                       style={{width: 20}}/></a></TableCell>*/}
+                                        {/*<TableCell component="th" id={labelId} scope="row" padding="none">*/}
+                                        {/*    {row.eCommerceName}*/}
+                                        {/*</TableCell>*/}
+                                        {
+                                            headers.map((header, index) => {
+                                                const column = header.id;
+                                                return header.hidden ? null :
+                                                    <TableCell key={index}>{row[column]}</TableCell>
+                                            })
+                                        }
+                                    </TableRow>
+                                );
+                            })}
+                        {emptyRows > 0 && (
+                            <TableRow style={{height: 53 * emptyRows}}>
+                                <TableCell colSpan={headers.length + 1}/>
+                            </TableRow>
+                        )}
+                    </TableBody>
+                </Table>
+            </div>
+            <TablePagination
+                rowsPerPageOptions={[5, 10, 25]}
+                component="div"
+                count={lines.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onChangePage={handleChangePage}
+                onChangeRowsPerPage={handleChangeRowsPerPage}
+            />
+        </Paper>;
+    }
 
     return (
-        lines.length === 0 ?
-            (
-                <div className={classes.noIndex}>{"No Indices Found."}</div>
-            ) :
-            (
-                <div className={classes.root}>
-                    <Paper className={classes.paper}>
-                        <EnhancedTableToolbar
-                            numSelected={selected.length}
-                            columns={headers}
-                            onColumnsChange={handleColumnsChange}
-                        />
-                        <div className={classes.tableWrapper}>
-                            <Table
-                                className={classes.table}
-                                aria-labelledby="tableTitle"
-                                size='medium'
-                                aria-label="enhanced table"
-                            >
-                                <EnhancedTableHead
-                                    headCells={headers}
-                                    classes={classes}
-                                    numSelected={selected.length}
-                                    order={order}
-                                    orderBy={orderBy}
-                                    onSelectAllClick={handleSelectAllClick}
-                                    onRequestSort={handleRequestSort}
-                                    rowCount={lines.length}
-                                />
-                                <TableBody>
-                                    {stableSort(lines, getSorting(order, orderBy))
-                                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                        .map((row, index) => {
-                                            const isItemSelected = isSelected(row.index);
-                                            const labelId = `enhanced-table-checkbox-${index}`;
-
-                                            return (
-                                                <TableRow
-                                                    hover
-                                                    onClick={event => handleClick(event, row.index)}
-                                                    role="checkbox"
-                                                    aria-checked={isItemSelected}
-                                                    tabIndex={-1}
-                                                    key={row.index}
-                                                    selected={isItemSelected}
-                                                >
-                                                    <TableCell padding="checkbox">
-                                                        <Checkbox
-                                                            checked={isItemSelected}
-                                                            inputProps={{ 'aria-labelledby': labelId }}
-                                                        />
-                                                    </TableCell>
-                                                    {/*<TableCell><a href={row.url} target='_blank'><img src={`${row.url}/favicon.ico`}*/}
-                                                    {/*                                                       style={{width: 20}}/></a></TableCell>*/}
-                                                    {/*<TableCell component="th" id={labelId} scope="row" padding="none">*/}
-                                                    {/*    {row.eCommerceName}*/}
-                                                    {/*</TableCell>*/}
-                                                    {
-                                                        headers.map((header, index) => {
-                                                            const column = header.id;
-                                                           return header.hidden ? null :
-                                                               <TableCell key={index}>{row[column]}</TableCell>
-                                                        })
-                                                    }
-                                                </TableRow>
-                                            );
-                                        })}
-                                    {emptyRows > 0 && (
-                                        <TableRow style={{ height: 53 * emptyRows }}>
-                                            <TableCell colSpan={headers.length+1} />
-                                        </TableRow>
-                                    )}
-                                </TableBody>
-                            </Table>
-                        </div>
-                        <TablePagination
-                            rowsPerPageOptions={[5, 10, 25]}
-                            component="div"
-                            count={lines.length}
-                            rowsPerPage={rowsPerPage}
-                            page={page}
-                            onChangePage={handleChangePage}
-                            onChangeRowsPerPage={handleChangeRowsPerPage}
-                        />
-                    </Paper>
-                    <Snackbar
-                        anchorOrigin={{
-                            vertical: 'bottom',
-                            horizontal: 'left',
-                        }}
-                        open={!alert.hidden}
-                        autoHideDuration={6000}
-                        // onClose={handleClose}
-                    >
-                        <AlertSnackbar
-                            onClose={handleAlertClose}
-                            variant="error"
-                            message={alert.message}
-                        />
-                    </Snackbar>
-                </div>
-            )
+        showSpinner ?
+            renderSpinner()
+        : (lines.length === 0 ? renderNoIndices() : renderTable())
     );
 }
